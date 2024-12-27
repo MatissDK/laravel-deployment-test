@@ -4,32 +4,42 @@ FROM php:8.1-fpm
 # Set the working directory
 WORKDIR /var/www/html
 
-# Install dependencies
+# Update package list and install dependencies
 RUN apt-get update && apt-get install -y \
+    build-essential \
     libpng-dev \
     libjpeg-dev \
+    libwebp-dev \
+    libxpm-dev \
     libfreetype6-dev \
-    libxml2-dev \
-    libicu-dev \
     libzip-dev \
-    git \
+    zip \
     unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring exif gd bcmath zip
+    git \
+    bash \
+    fcgiwrap \
+    libmcrypt-dev \
+    libonig-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install gd \
+    && docker-php-ext-install pdo pdo_pgsql mbstring zip exif pcntl bcmath opcache
 
 # Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
 
 # Copy application files
 COPY . .
 
-# Install PHP dependencies
-RUN composer composer install --no-dev --optimize-autoloader --verbose
+# Set ownership and permissions for the /var/www/html directory to www-data
+RUN chown -R www-data:www-data /var/www/html/
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+USER www-data
 
 # Expose port 9000 and start PHP-FPM server
 EXPOSE 9000
+
 CMD ["php-fpm"]
