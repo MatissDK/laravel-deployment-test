@@ -33,7 +33,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner | toLowerCase() }}/laravel-app:latest  # Tag format for GHCR
+          tags: ghcr.io/matissdk/laravel-app:latest  # Tag format for GHCR
 
   deploy:
     runs-on: ubuntu-latest
