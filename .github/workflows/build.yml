@@ -25,7 +25,7 @@ jobs:
           registry: ghcr.io  # The GHCR registry
           username: ${{ github.actor }}  # Use the GitHub username of the current user
 #          password: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
-          password: ${{ github.token }}  # GitHub token for authentication
+          password: ${{ github.token }}  # GitHub token for authentication!
 
       # Build and push Docker image
       - name: Build and push Docker image
